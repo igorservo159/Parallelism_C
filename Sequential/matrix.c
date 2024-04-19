@@ -79,12 +79,20 @@ int multiply_matrices(int *m1, int *m2, int *res, int m1Rows, int m1Columns, int
     }
 }
 
-void fill(int **matrix, int rows, int columns, int seed){
+int transpose_matrix(int *matrix, int *res, int rows, int columns) {
+    for (int i = 0; i < rows; i++){
+        for (int j = 0; j < columns; j++){
+            res[i + j*rows] = matrix[j + i*columns];
+        }
+    }
+}
+
+void fill(int *matrix, int rows, int columns, int seed){
     srand(seed);
 
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++) {
-            (*matrix)[j + (i*columns)] = rand() % 10;
+            matrix[j + (i*columns)] = rand() % 10;
         }
     }
 }

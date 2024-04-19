@@ -14,11 +14,17 @@ int main(int argc, char const *argv[]) {
 
     int *m1 = NULL;
     init(&m1, m1_rows, m1_columns);
-    fill(&m1, m1_rows, m1_columns, 1);
+    fill(m1, m1_rows, m1_columns, 1);
 
     int *m2 = NULL;
     init(&m2, m2_rows, m2_columns);
-    fill(&m2, m2_rows, m2_columns, 2);
+    fill(m2, m2_rows, m2_columns, 2);
+
+    int *transposedM1 = NULL;
+    init(&transposedM1, m1_columns, m1_rows);
+    transpose_matrix(m1, transposedM1, m1_rows, m1_columns);
+    show_matrix(m1, m1_rows, m1_columns);
+    show_matrix(transposedM1, m1_columns, m1_rows);
 
     int *res = NULL;
     init(&res, m1_rows, m2_columns);
