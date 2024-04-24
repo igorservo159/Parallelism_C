@@ -38,6 +38,7 @@ int init_identity(int **matrix, int rows, int columns) {
         return -1;
     }
 
+    #pragma omp parallel for collapse(2)
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++) {
             (*matrix)[j + (i*columns)] = (i == j);
@@ -59,7 +60,10 @@ void show_matrix(int *matrix, int rows, int columns) {
 
 int get_multiplication_element(int *m1, int *m2, int row, int column, int tam) {
     int sum = 0;
-    for (int x = 0; x < tam; x++) {
+    int x;
+
+    #pragma omp parallel for private(x) reduction(+ : sum)
+    for (x = 0; x < tam; x++) {
         sum += m1[(row*tam) + x] * m2[(x*tam) + column];
     }
     return sum;
@@ -67,6 +71,7 @@ int get_multiplication_element(int *m1, int *m2, int row, int column, int tam) {
 
 int multiply_matrices(int *m1, int *m2, int *res, int m1Rows, int m1Columns, int m2Rows, int m2Columns) {
     if (m1Columns == m2Rows) {
+        #pragma omp parallel for collapse(2)
         for (int i = 0; i < m1Rows; i++) {
             for (int j = 0; j < m2Columns; j++) {
                 res[j + (i*m2Columns)] = get_multiplication_element(m1, m2, i, j, m1Columns);
@@ -83,8 +88,9 @@ int transpose_matrix(int *matrix, int **res, int rows, int columns) {
 
     int test = init(res, columns, rows);
 
-    if(test == -1) return -1;
+    if (test == -1) return -1;
 
+    #pragma omp parallel for collapse(2)
     for (int i = 0; i < rows; i++){
         for (int j = 0; j < columns; j++){
             (*res)[i + j*rows] = matrix[j + i*columns];
@@ -96,6 +102,8 @@ int transpose_matrix(int *matrix, int **res, int rows, int columns) {
 
 void transpose_quad_in_place(int *matrix, int rows, int columns) {
     int temp;
+
+    #pragma omp parallel for collapse(2)
     for (int i = 0; i < rows; i++) {
         for (int j = i + 1; j < columns; j++) {
             temp = matrix[i * columns + j];
@@ -108,6 +116,7 @@ void transpose_quad_in_place(int *matrix, int rows, int columns) {
 void fill(int *matrix, int rows, int columns, int seed){
     srand(seed);
 
+    #pragma omp parallel for collapse(2)
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++) {
             matrix[j + (i*columns)] = rand() % 10;
